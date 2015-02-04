@@ -22,7 +22,10 @@ public class TestClass {
 		des.setKeySize(10);
 		des.setEffectiveKeySize(10);
 		des.setRoundKeySize(8);
+		des.setNumberOfRounds(1);
 		des.setVerbose(true);
+		des.setKey("0110101100");
+		des.setPlainText("123");
 		des.encrypt();
 	}
 

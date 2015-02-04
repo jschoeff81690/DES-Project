@@ -3,27 +3,28 @@ package sdes.functions;
 import java.util.BitSet;
 
 public class BinaryRoundKeyGenerator {
-	private BitSet key;
 	private int keyLength;
-	private int PC1[];
-	private int PC2[];
+	private int effectiveKeySize;
+	private int roundKeySize;
+	private int pc1[];
+	private int pc2[];
 	private boolean verbose;
 
-	public BinaryRoundKeyGenerator(int keyLength,int effectiveKeySize, int roundKeySize, int pc1[], int pc2[], boolean verbose) {
-		this.PC1 = pc1;
-		this.PC2 = pc2;
+	public BinaryRoundKeyGenerator(int keyLength,int effectiveKeySize, int roundKeySize, int pc1[], int pc2[],boolean verbose) {
+		this.pc1 = pc1;
+		this.pc2 = pc2;
 		this.keyLength = keyLength;
+		this.effectiveKeySize = effectiveKeySize;
+		this.roundKeySize = roundKeySize;
 		this.verbose = verbose;
 	}
 
-	public String generateSubkey(BitSet key,int round) {
+	public BitSet generateSubkey(BitSet key, int round) {
 		BitSet output = new BitSet(keyLength);
-		this.key = key;
-		
-		debugln("Generating Subkey: \n\tKey: " + convertToString(key, keyLength)+ "\n\tRound: " + round);
+		debugln("Generating Round Key("+round+"): \n\tKey: " + convertToString(key, keyLength)+ "\n\tRound: " + round);
 		
 		//Perform PC-1
-		output = this.permutate(key, PC1, 10);
+		output = this.permutate(key, pc1, effectiveKeySize);
 		debugln("\tPC1: " + convertToString(output,keyLength));
 		
 		//rotateleft halves
@@ -34,10 +35,10 @@ public class BinaryRoundKeyGenerator {
 		debugln("\tRotateleft(5,9): " + convertToString(output,keyLength));
 		
 		//perform PC-2
-		output = this.permutate(output, PC2, 8);
+		output = this.permutate(output, pc2, roundKeySize);
 		debugln("\tPC2: " + convertToString(output,8));
 		
-		return output.toString();
+		return output;
 	}
 	/* 
 	 * Rotate a substring by amount

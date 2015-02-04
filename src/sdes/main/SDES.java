@@ -23,17 +23,21 @@ public class SDES {
 	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
 	private int pBoxPerm[];				//P-box transposition permutation 
 	private boolean verbose;
+	private String key;
+	private String plainText;
 	
 	public void encrypt() {
 		//maybe confirm that all variables are correct?
+		//length of plaintext == blocklength
+		//length of key == keysize
+		BinaryRoundKeyGenerator keyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize,  pc1, pc2, verbose);
 		
-		//loop for rounds?
-		//for (int i =1; i <= rounds; i++) {
-		//	//do round stuff
-		//}
-		
-		BinaryRoundKeyGenerator binKeyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize,  pc1, pc2, verbose);
-		binKeyGen.generateSubkey(toBitSet("0110101100"),1);
+		//loop for rounds of encrypt
+		for (int round =1; round <= numberOfRounds; round++) {
+			
+			//generate Round KEy
+			BitSet currentRoundKey = keyGen.generateSubkey(toBitSet(key),round);
+		}
 	}
 	/* 
 	Converts Binary String to BitSet
@@ -60,12 +64,32 @@ public class SDES {
 		return s.toString();
 	}
 
-
+	public <T> void debug(T output) { 
+		if(verbose)
+			System.out.print(output);
+	}
+	public <T> void debugln(T output) { 
+		if(verbose)
+			System.out.println(output);
+	}
 
 	/*
 		GETters and SETters for SDES class
 
 	 */
+	public void setKey(String str) {
+		this.key = str;
+	}
+	public String getKey() {
+		return this.key;
+	}
+
+	public void setPlainText(String str) {
+		this.plainText = str;
+	}
+	public String getPlainText() {
+		return this.plainText;
+	}
 
 	public void setVerbose(boolean v) {
 		this.verbose = v;
@@ -201,12 +225,4 @@ public class SDES {
 		this.sBoxes = boxes;
 	}
 
-	public <T> void debug(T output) { 
-		if(verbose)
-			System.out.print(output);
-	}
-	public <T> void debugln(T output) { 
-		if(verbose)
-			System.out.println(output);
-	}
 }
