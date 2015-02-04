@@ -1,32 +1,76 @@
 package sdes.main;
 
-import java.util.ArrayList;
 import java.util.BitSet;
+
+import sdes.functions.BinaryRoundKeyGenerator;
 
 public class SDES {
 
 	private int blockSize;				//Block size
-	private int keySize;				//Key size – number of bits in key
-	private int effectiveKeySize;		//Effective key size – number of key bits after PC-1
-	private int roundkeySize;			//Round key size
+	private int keySize;				//Key size - number of bits in key
+	private int effectiveKeySize;		//Effective key size - number of key bits after PC-1
+	private int roundKeySize;			//Round key size
 	private int numberOfRounds;			//Number of Rounds
-	private int pc1[];					// Initial Permuted Choice for Round Key Generation – takes Q bits in and outputs QE bits
+	private int pc1[];					// Initial Permuted Choice for Round Key Generation - takes Q bits in and outputs QE bits
 	private int pc2[];					// Permuted Choice to set bits for Round Key
-	private int rotationSchedule[];		// Left Rotation ScheduleLeft Rotation Schedule –  List of N integers, indicates number of logical left shifts 
+	private int rotationSchedule[];		// Left Rotation ScheduleLeft Rotation Schedule -  List of N integers, indicates number of logical left shifts 
 	private int initialPerm[];			//Initial Permutation
 	private int inverseInitialPerm[];	//IP^-1 - Inverse IP is derived from IP
-	private int expansionPerm[];		//Expansion permutation – lists where each of R bits comes from in input of length B/2
+	private int expansionPerm[];		//Expansion permutation - lists where each of R bits comes from in input of length B/2
 	private int numSBoxes;				//Number of S-Boxes (each takes in R/T bits, outputs B/2T bits)
 	private int rowChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the row
 	private int colChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the col
-	private ArrayList<Integer[][]> sBoxes; //ith S-box substitution – array of 2^x rows and 2^y columns, where x = R/T – B/2T, and y = B/2T
+	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
 	private int pBoxPerm[];				//P-box transposition permutation 
 	private boolean verbose;
+	
+	public void encrypt() {
+		//maybe confirm that all variables are correct?
+		
+		//loop for rounds?
+		//for (int i =1; i <= rounds; i++) {
+		//	//do round stuff
+		//}
+		
+		BinaryRoundKeyGenerator binKeyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize,  pc1, pc2, verbose);
+		binKeyGen.generateSubkey(toBitSet("0110101100"),1);
+	}
+	/* 
+	Converts Binary String to BitSet
+	*/
+	public BitSet toBitSet(String str) {
+		BitSet b = new BitSet(str.length());
+		for(int i=0; i < str.length(); i++) {
+			if(str.charAt(i) == '1')
+				b.set(i);
+			else
+				b.set(i, false);
+		}
+		System.out.println("String str: " +str +" to BitSet: "+convertToString(b,str.length()));
+		return b;
+	}
+	public String convertToString(BitSet b,int length) {
+		StringBuffer s = new StringBuffer();
+		for(int i=0; i < length; i++) {
+			if(b.get(i))
+				s.append(1);
+			else 
+				s.append(0);
+		}
+		return s.toString();
+	}
 
-	private void setVerbose(boolean v) {
+
+
+	/*
+		GETters and SETters for SDES class
+
+	 */
+
+	public void setVerbose(boolean v) {
 		this.verbose = v;
 	}
-	private boolean getVerbose() {
+	public boolean getVerbose() {
 		return this.verbose;
 	}
 	public void setBlockSize(int num) {
@@ -53,12 +97,12 @@ public class SDES {
 		return this.effectiveKeySize;
 	}
 
-	public void setRoundkeySize(int num) {
-		this.roundkeySize = num;
+	public void setRoundKeySize(int num) {
+		this.roundKeySize = num;
 	}
 
-	public int getRoundkeySize() {
-		return this.roundkeySize;
+	public int getRoundKeySize() {
+		return this.roundKeySize;
 	}
 
 	public void setNumberOfRounds(int num) {
@@ -149,11 +193,11 @@ public class SDES {
 		return this.pBoxPerm;
 	}
 
-	public ArrayList<Integer[][]> getSBoxes() {
+	public int[][][] getSBoxes() {
 		return sBoxes;
 	} 
 
-	public void setSBoxes(ArrayList<Integer[][]> boxes) {
+	public void setSBoxes(int[][][] boxes) {
 		this.sBoxes = boxes;
 	}
 

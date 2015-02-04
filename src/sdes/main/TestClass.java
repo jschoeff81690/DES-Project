@@ -16,27 +16,14 @@ public class TestClass {
 		int EP[]  = {4,1,2,3,2,3,4,1}; 
 
 		int PC2[] = {6,3,7,4,8,5,10,9};
-
-//		public int masks[] = {1,2,4,8,16,32,64,128,256,512};
-//		int masks[] = {512,256,128,64,32,16,8,4,2,1};
-//		int tester= 0b0110101100;
-//		int temp=0;
-//		for(int i =0; i < 10; i++) {
-//			 int mask =  masks[PC1[i]-1]&tester;
-//			 if(mask > 0) 
-//				 temp += mask;
-//			 //System.out.println(Integer.toBinaryString(mask));
-//			 System.out.println(mask +" : " + Integer.toBinaryString(temp));
-////				System.out.println(temp + " : " + (temp>>(10-PC1[i])));
-//		}
-//		System.out.println("anwser: " +Integer.toBinaryString(temp));
-//		System.out.println("subkey1:" +generate_subkey("0110101100",1));
-//		RoundKeyGenerator keyGen = new RoundKeyGenerator(10, PC1, PC2,true);
-		
-		BinaryRoundKeyGenerator binKeyGen = new BinaryRoundKeyGenerator(10, PC1, PC2,true);
-//		keyGen.generateSubkey("0110101100",1);
-		
-		binKeyGen.generateSubkey(toBitSet("0110101100"),1);
+		SDES des =  new SDES();	
+		des.setPc1(PC1);
+		des.setPc2(PC2);
+		des.setKeySize(10);
+		des.setEffectiveKeySize(10);
+		des.setRoundKeySize(8);
+		des.setVerbose(true);
+		des.encrypt();
 	}
 
 	/* 

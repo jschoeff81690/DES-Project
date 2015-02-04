@@ -9,7 +9,7 @@ public class BinaryRoundKeyGenerator {
 	private int PC2[];
 	private boolean verbose;
 
-	public BinaryRoundKeyGenerator(int keyLength, int pc1[], int pc2[], boolean verbose) {
+	public BinaryRoundKeyGenerator(int keyLength,int effectiveKeySize, int roundKeySize, int pc1[], int pc2[], boolean verbose) {
 		this.PC1 = pc1;
 		this.PC2 = pc2;
 		this.keyLength = keyLength;
@@ -20,22 +20,22 @@ public class BinaryRoundKeyGenerator {
 		BitSet output = new BitSet(keyLength);
 		this.key = key;
 		
-		System.out.println("Generating Subkey: \n\tKey: " + convertToString(key, keyLength)+ "\n\tRound: " + round);
+		debugln("Generating Subkey: \n\tKey: " + convertToString(key, keyLength)+ "\n\tRound: " + round);
 		
 		//Perform PC-1
 		output = this.permutate(key, PC1, 10);
-		System.out.println("\tPC1: " + convertToString(output,keyLength));
+		debugln("\tPC1: " + convertToString(output,keyLength));
 		
 		//rotateleft halves
 		output= this.rotateLeftSubstring(output,0,4,round);
-		System.out.println("\tRotateleft(0,4): " + convertToString(output,keyLength));
+		debugln("\tRotateleft(0,4): " + convertToString(output,keyLength));
 		
 		output= this.rotateLeftSubstring(output,5,9,round);
-		System.out.println("\tRotateleft(5,9): " + convertToString(output,keyLength));
+		debugln("\tRotateleft(5,9): " + convertToString(output,keyLength));
 		
 		//perform PC-2
 		output = this.permutate(output, PC2, 8);
-		System.out.println("\tPC2: " + convertToString(output,8));
+		debugln("\tPC2: " + convertToString(output,8));
 		
 		return output.toString();
 	}
