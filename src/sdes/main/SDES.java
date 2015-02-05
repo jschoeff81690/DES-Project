@@ -23,24 +23,122 @@ public class SDES {
 	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
 	private int pBoxPerm[];				//P-box transposition permutation 
 	private boolean verbose;
-	private String key;
-	private String plainText;
+	private BitSet key;
+	private BitSet plainText;
 	
 	public void encrypt() {
 		//maybe confirm that all variables are correct?
 		//length of plaintext == blocklength
 		//length of key == keysize
-		BinaryRoundKeyGenerator keyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize,  pc1, pc2, verbose);
-		
+		BinaryRoundKeyGenerator keyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize, rotationSchedule, pc1, pc2, verbose);
+		debugln("plainText:" + convertToString(plainText, blockSize));
+		BitSet cipher = permutate(plainText, initialPerm, blockSize);
+		debugln("InitialPermutation: " + convertToString(cipher,blockSize));
+			
+
 		//loop for rounds of encrypt
-		for (int round =1; round <= numberOfRounds; round++) {
+		for (int round = 1; round <= numberOfRounds; round++) {
+			debugln("\nBegin Round: "+round);
+			BitSet leftHalf = subSet(cipher,0,blockSize/2-1);
+			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
+			BitSet rightHalf = subSet(cipher,blockSize/2,blockSize-1);
+			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
+			
+			BitSet effectivePerm = permutate(rightHalf,expansionPerm, blockSize);
+			debugln("\tRound("+round+") R0, EP: " + convertToString(effectivePerm, blockSize));
 			
 			//generate Round KEy
-			BitSet currentRoundKey = keyGen.generateSubkey(toBitSet(key),round);
+			key = this.generateSubkey(key,round);
+			
+			// XOR result of EP with subkey
+			effectivePerm.xor(key);
+			debugln("\tRound("+round+") EP xor subkey: " + convertToString(effectivePerm, blockSize));
+			
+			//left right half after subkey
+			leftHalf = subSet(effectivePerm,0,blockSize/2-1);
+			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
+			rightHalf = subSet(effectivePerm,blockSize/2,blockSize-1);
+			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
+			
+			//sboxes
+
+			debugln("End Round: "+round +"\n");
 		}
 	}
+
+	
+	public BitSet Sbox(BitSet in, int sBox[][], int outputLength) {
+		
+	}
+	
+	public BitSet generateSubkey(BitSet key, int round) {
+		BitSet output = new BitSet(keySize);
+		debugln("\n\tGenerating Round Key("+round+"): \n\t\tKey: " + convertToString(key, keySize));
+		
+		//Perform PC-1
+		output = this.permutate(key, pc1, effectiveKeySize);
+		debugln("\t\tPC1: " + convertToString(output,effectiveKeySize));
+		
+		//rotateleft halves
+		output= this.rotateLeftSubstring(output,0,4,rotationSchedule[round-1]);
+		debugln("\t\tRotateleft(0,4): " + convertToString(output,effectiveKeySize));
+		
+		output= this.rotateLeftSubstring(output,5,9,rotationSchedule[round-1]);
+		debugln("\t\tRotateleft(5,9): " + convertToString(output,effectiveKeySize));
+		
+		//perform PC-2
+		output = this.permutate(output, pc2, roundKeySize);
+		debugln("\t\tPC2: " + convertToString(output,8));
+		
+		debugln("\tEnd roundKey Generation("+round +")\n");
+		return output;
+	}
+
+	/* 
+	 * Rotate a substring by amount
+	 * returns stringBuilder with substring(start to end) rotated left by amount
+	 * start -- the begin index, inclusive.
+	 * end -- the end index, inclusive.
+	 * e.g.
+	 * 	rotateLeftSubstring("abcdefgh",0,4,1) => "bceafgh"
+	 * 	
+	 */
+	public BitSet rotateLeftSubstring(BitSet in, int start, int end, int amount) {
+		BitSet output = in;
+		for(int i=start; i <= end-amount; i++){
+			output.set(i, in.get(i+amount));
+		}
+		for(int i=0; i<amount; i++) {
+			output.set(end-amount+1+i, in.get(start+i));
+		}
+		return output;
+	}
+	
+	public BitSet permutate(BitSet in, int permutation[], int length){ 
+		BitSet output = new BitSet(length);
+		for(int i =0; i < length; i++) {
+			output.set(i, in.get(permutation[i]-1));
+		}
+		return output;
+	}
+
+	/*
+	 * start -- the begin index, inclusive.
+	 * end -- the end index, inclusive.
+	 */
+	public BitSet subSet(BitSet in, int start, int end) {
+		BitSet output = new BitSet();
+		int length = 0;
+		for(int i=start; i <=end; i++) {
+			output.set(length,in.get(i));
+			length++;
+		}
+		return output;
+	}
+
 	/* 
 	Converts Binary String to BitSet
+	e.g., "10101" becomes a bit set of {true, false, true, false, true}
 	*/
 	public BitSet toBitSet(String str) {
 		BitSet b = new BitSet(str.length());
@@ -50,7 +148,7 @@ public class SDES {
 			else
 				b.set(i, false);
 		}
-		System.out.println("String str: " +str +" to BitSet: "+convertToString(b,str.length()));
+		//System.out.println("String str: " +str +" to BitSet: "+convertToString(b,str.length()));
 		return b;
 	}
 	public String convertToString(BitSet b,int length) {
@@ -78,16 +176,16 @@ public class SDES {
 
 	 */
 	public void setKey(String str) {
-		this.key = str;
+		this.key = toBitSet(str);
 	}
-	public String getKey() {
+	public BitSet getKey() {
 		return this.key;
 	}
 
 	public void setPlainText(String str) {
-		this.plainText = str;
+		this.plainText = toBitSet(str);
 	}
-	public String getPlainText() {
+	public BitSet getPlainText() {
 		return this.plainText;
 	}
 

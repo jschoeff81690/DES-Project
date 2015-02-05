@@ -9,13 +9,15 @@ public class BinaryRoundKeyGenerator {
 	private int pc1[];
 	private int pc2[];
 	private boolean verbose;
+	private int rotationSchedule[];
 
-	public BinaryRoundKeyGenerator(int keyLength,int effectiveKeySize, int roundKeySize, int pc1[], int pc2[],boolean verbose) {
+	public BinaryRoundKeyGenerator(int keyLength,int effectiveKeySize, int roundKeySize, int rotationSchedule[], int pc1[], int pc2[],boolean verbose) {
 		this.pc1 = pc1;
 		this.pc2 = pc2;
 		this.keyLength = keyLength;
 		this.effectiveKeySize = effectiveKeySize;
 		this.roundKeySize = roundKeySize;
+		this.rotationSchedule = rotationSchedule;
 		this.verbose = verbose;
 	}
 
@@ -28,10 +30,10 @@ public class BinaryRoundKeyGenerator {
 		debugln("\tPC1: " + convertToString(output,keyLength));
 		
 		//rotateleft halves
-		output= this.rotateLeftSubstring(output,0,4,round);
+		output= this.rotateLeftSubstring(output,0,4,rotationSchedule[round-1]);
 		debugln("\tRotateleft(0,4): " + convertToString(output,keyLength));
 		
-		output= this.rotateLeftSubstring(output,5,9,round);
+		output= this.rotateLeftSubstring(output,5,9,rotationSchedule[round-1]);
 		debugln("\tRotateleft(5,9): " + convertToString(output,keyLength));
 		
 		//perform PC-2
@@ -43,6 +45,8 @@ public class BinaryRoundKeyGenerator {
 	/* 
 	 * Rotate a substring by amount
 	 * returns stringBuilder with substring(start to end) rotated left by amount
+	 * start -- the begin index, inclusive.
+	 * end -- the end index, inclusive.
 	 * e.g.
 	 * 	rotateLeftSubstring("abcdefgh",0,4,1) => "bceafgh"
 	 * 	

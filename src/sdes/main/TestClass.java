@@ -12,20 +12,31 @@ public class TestClass {
 	 */
 	public static void main(String[] args) {
 
-		int PC1[] = {3,5,2,7,4,10,1,9,8,6};
-		int EP[]  = {4,1,2,3,2,3,4,1}; 
-
-		int PC2[] = {6,3,7,4,8,5,10,9};
-		SDES des =  new SDES();	
+		int PC1[]        = {3,5,2,7,4,10,1,9,8,6};
+		int IP[]         = {2, 6, 3, 1, 4, 8, 5, 7};
+		int inverse_IP[] = {4, 1, 3, 5, 7, 2, 8, 6};
+		int EP[]         = {4,1,2,3,2,3,4,1}; 
+		int PC2[]        = {6,3,7,4,8,5,10,9};
+		int sbox0[][]	 = {{1,0,3,2},{3,2,1,0},{0,2,1,3},{3,1,3,2}};
+		int sbox1[][]	 = {{0,1,2,3},{2,0,1,3},{3,0,1,0},{2,1,0,3}};
+		int sBoxes[][][] = {sbox0,sbox1};
+		SDES des         =  new SDES();	
+		
+		des.setSBoxes(sBoxes);
 		des.setPc1(PC1);
 		des.setPc2(PC2);
+		des.setInitialPerm(IP);
+		des.setExpansionPerm(EP);
+		des.setInverseInitialPerm(inverse_IP);
 		des.setKeySize(10);
 		des.setEffectiveKeySize(10);
 		des.setRoundKeySize(8);
-		des.setNumberOfRounds(1);
+		des.setNumberOfRounds(2);
+		des.setBlockSize(8);
+		des.setRotationSchedule(new int[]{1,2});
 		des.setVerbose(true);
 		des.setKey("0110101100");
-		des.setPlainText("123");
+		des.setPlainText("10100101");
 		des.encrypt();
 	}
 
@@ -40,7 +51,7 @@ public class TestClass {
 			else
 				b.set(i, false);
 		}
-		System.out.println("String str: " +str +" to BitSet: "+convertToString(b,str.length()));
+		//System.out.println("String str: " +str +" to BitSet: "+convertToString(b,str.length()));
 		return b;
 	}
 	public static String convertToString(BitSet b,int length) {
