@@ -1,4 +1,4 @@
 # DES-Project
 DES-like encryption/decryption project for school.
 
-#No longer us RoundKeyGenerator, all encryption is SDES.encrypt
+# No longer using RoundKeyGenerator, all encryption is doesn in SDES.encrypt()
