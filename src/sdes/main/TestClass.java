@@ -58,62 +58,149 @@ public class TestClass {
 		
 		try {
 			File file = new File(filename);
+	    	FileReader fr = new FileReader(file.getAbsolutePath());
+	    	BufferedReader br = new BufferedReader(fr);
 
-			FileReader fr = new FileReader(file.getAbsolutePath());
-			BufferedReader br = new BufferedReader(fr);
+	    	//read in first 5 params
+	    	for(int i=0; i<5; i++){ //assumes params.txt is in format of int (tab) comments, with the int being less than 3 digits long
+	    		string = br.readLine();
+	    		parameters[i] = string.substring(0, 2);
+	    		//System.out.println(parameters[i]);
+	    	}
+	    
+	/*		//set params
+	    	des.setBlockSize(Integer.parseInt(parameters[0]));
+	    	des.setKeySize(Integer.parseInt(parameters[1]));
+	    	des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
+	    	des.setRoundKeySize(Integer.parseInt(parameters[3]));
+	    	des.setNumberofRounds(Integer.parseInt(parameters[4]));
+	    
+	*/
+	    
+	    	//read in PC-1
+	    	string = br.readLine();
+	    	String[] fullpc1 = string.split(" "); //only need first 10, rest is comments
+	    	String[] perc1 = new String[10];
+	    	int[] permc1 = new int[10];
+	    	String[] fix = fullpc1[9].split("/");
+	    	fullpc1[9] = fix[0];
+	    
+	    	for (int i=0; i<10; i++){
+	    		perc1[i] = fullpc1[i];
+	    		//permc1[i] = Integer.parseInt(perc1[i]);
+	    	}
+	    	//System.out.println(Arrays.toString(permc1));
+	    
+	    
+	    	//read in PC-2
+	    	string = br.readLine();
+	    	String[] fullpc2 = string.split(" ");
+	    	String[] perc2 = new String[8];
+	    	int[] permc2 = new int[8];
+	    	for (int i=0; i<8; i++){
+	    		perc2[i] = fullpc2[i];
 
-			//read in first 5 params
-			for(int i=0; i<5; i++){ //assumes params.txt is in format of int (tab) comments, with the int being less than 3 digits long
-				string = br.readLine();
-				parameters[i] = string.substring(0, 2);
-				//System.out.println(parameters[i]);
-			}
+	    	}
+	    	//System.out.println(Arrays.toString(perc2));
+	    
+	    	//set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
+	    	for (int i=0; i<9; i++){
+	    	//setPc1((perc1));
+	    
+	    	}
+	    	for (int i=0; i<8; i++){
+	    
+	    	}
 
-			/*		//set params
-			des.setBlockSize(Integer.parseInt(parameters[0]));
-			des.setKeySize(Integer.parseInt(parameters[1]));
-			des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
-			des.setRoundKeySize(Integer.parseInt(parameters[3]));
-			des.setNumberofRounds(Integer.parseInt(parameters[4]));
-
-			*/
-
-			//read in PC-1
-			string = br.readLine();
-			String[] fullpc1 = string.split(" "); //only need first 10, rest is comments
-			String[] perc1 = new String[10];
-			int[] permc1 = new int[10];
-			String[] fix = fullpc1[9].split("/");
-			fullpc1[9] = fix[0];
-
-			for (int i=0; i<10; i++){
-				perc1[i] = fullpc1[i];
-				//permc1[i] = Integer.parseInt(perc1[i]);
-			}
-			//System.out.println(Arrays.toString(permc1));
-
-
-			//read in PC-2
-			string = br.readLine();
-			String[] fullpc2 = string.split(" ");
-			String[] perc2 = new String[8];
-			int[] permc2 = new int[8];
-			for (int i=0; i<8; i++){
-				perc2[i] = fullpc2[i];
-
-			}
-			//System.out.println(Arrays.toString(perc2));
-
-			//set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
-			for (int i=0; i<9; i++){
-			//setPc1((perc1));
-
-			}
-			for (int i=0; i<8; i++){
-
-			}
-
-			br.close();
+            //read and set left rotation schedule
+            br.readLine(); //get rid of the blank line
+            string = br.readLine();
+            String[] rsc = string.split(" "); // rs[1] = 2 //comments
+            fix = rsc[1].split("/"); //removing the comments so rs[1] = 2
+            rsc[1] = fix[0];
+            int[] rs;
+            rs[0] = Integer.parseInt(rsc[0]);
+            rs[1] = Integer.parseInt(rsc[1]);
+            des.setRotationSchedule(rs);
+            
+            
+            // int [] IP = null;
+            // read and set IP
+            string = br.readLine();
+            String[] initP = string.split(" ");
+            fix = initP[7].split("/");
+            initP[7] = fix[0];
+            for (int i=0; i<8; i++){
+                IP[i] = Integer.parseInt(initP[i]);
+            }
+            des.setInitialPerm(IP); // IP is int array
+            
+            
+            // read and set EP
+            // int EP[] = null;
+            string = br.readLine();
+            String[] exP = string.split(" ");
+            fix = exP[7].split("/");
+            exP[7] = fix[0];
+             for (int i=0; i<8; i++){
+                EP[i] = Integer.parseInt(exP[i]);
+            }               
+            des.setExpansionPerm(EP);
+            
+            
+            // read and set P-box transposition
+            // int pBox[] = null;
+            string = br.readLine();
+            String[] pBoxPerm = string.split(" ");
+            fix = pBoxPerm[3].split("/");
+            pBoxPerm[3] = fix[0];
+             for (int i=0; i<4; i++){
+                pBox[i] = Integer.parseInt(pBoxPerm[i]);
+            }                   
+            des.setPBoxPerm(pBox);
+            
+            // read and set # of sbox
+            // int numSBoxes;
+            br.readLine(); //get rid of the blank line
+            string = br.readLine();
+            String[] sboxnum = string.split("/"):
+            numSBoxes = Integer.parseInt(sboxnum[0]);
+            des.setNumSBoxes(numSBoxes);
+            
+            
+            // read and set row choice
+            string = br.readLine();
+            String[] rc = string.split(" ");
+            fix = rc[1].split("/");
+            rc[1] = fix[0];
+            for (int i=0; i<2; i++){
+                rowChoice[i] = Integer.parseInt(rc[i]);
+            }                   
+        	des.setRowChoice(rowChoice);   
+            
+            
+            // read and set col choice
+            string = br.readLine();
+            String[] cc = string.split(" ");
+            fix = cc[1].split("/");
+            cc[1] = fix[0];
+            for (int i=0; i<2; i++){
+                colChoice[i] = Integer.parseInt(cc[i]);
+            }                 
+            des.setColChoice(colChoice);
+            
+            br.readLine(); //get rid of the blank line
+            br.readLine(); //get rid of the comment line
+            
+            // read and set sBoxes 0 and 1
+            
+            
+            
+            
+            
+            des.setSBoxes(sBoxes);
+            
+	    	br.close();
 		}
 		catch(Exception e) {
 			System.out.println("There was an error reading params from: "+fileName);
