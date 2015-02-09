@@ -39,6 +39,7 @@ public class TestClass {
 		int inverse_IP[] = {4, 1, 3, 5, 7, 2, 8, 6};
 		int EP[]         = {4,1,2,3,2,3,4,1}; 
 		int PC2[]        = {6,3,7,4,8,5,10,9};
+		int pBox[]		 = {2, 4, 3, 1};
 		int numSBoxes 	 = 2;
 		int sbox0[][]	 = {{1,0,3,2},{3,2,1,0},{0,2,1,3},{3,1,3,2}};//row1{c1,...,cN},...,rowN{c1,...,cN}
 		int sbox1[][]	 = {{0,1,2,3},{2,0,1,3},{3,0,1,0},{2,1,0,3}};
@@ -111,7 +112,7 @@ public class TestClass {
 			System.out.println("There was an error reading params from: "+fileName);
 			System.out.println("Error: "+e.getMessage());
 		}
-
+		des.setPBoxPerm(pBox);
 		des.setRowChoice(rowChoice);
 		des.setColChoice(colChoice);
 		des.setSBoxes(sBoxes);

@@ -30,58 +30,96 @@ public class SDES {
 		//length of key == keysize
 		debugln("plainText:" + convertToString(plainText, blockSize));
 		BitSet cipher = permutate(plainText, initialPerm, blockSize);
-		debugln("InitialPermutation: " + convertToString(cipher,blockSize));
+		debugln("InitialPermutation result: " + convertToString(cipher,blockSize));
 			
 
 		//loop for rounds of encrypt
 		for (int round = 1; round <= numberOfRounds; round++) {
 			debugln("\nBegin Round: "+round);
+
+			//Start round, Split result of Initial Perm into Lo and Ro
 			BitSet leftHalf = subSet(cipher,0,blockSize/2-1);
-			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
+			debugln("\tRound("+round+") Lo: " + convertToString(leftHalf,blockSize/2));
 			BitSet rightHalf = subSet(cipher,blockSize/2,blockSize-1);
-			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
+			debugln("\tRound("+round+") Ro: " + convertToString(rightHalf, blockSize/2));
 			
+			//perform expansion Permutatun on the right half,
 			BitSet effectivePerm = permutate(rightHalf,expansionPerm, blockSize);
-			debugln("\tRound("+round+") R0, EP: " + convertToString(effectivePerm, blockSize));
+			debugln("\tRound("+round+") R0, EP result: " + convertToString(effectivePerm, blockSize));
 			
-			//generate Round KEy
+			//generate Round Key
 			key = this.generateSubkey(key,round);
 			
 			// XOR result of EP with subkey
 			effectivePerm.xor(key);
-			debugln("\tRound("+round+") EP xor subkey: " + convertToString(effectivePerm, blockSize));
+			debugln("\tRound("+round+") EP xor subkey result: " + convertToString(effectivePerm, blockSize));
 			
-			//left right half after subkey
-			leftHalf = subSet(effectivePerm,0,blockSize/2-1);
-			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
-			rightHalf = subSet(effectivePerm,blockSize/2,blockSize-1);
-			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
-			
+//			//left and right half after EP XOR subkey
+//			leftHalf = subSet(effectivePerm,0,blockSize/2-1);
+//			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
+//			rightHalf = subSet(effectivePerm,blockSize/2,blockSize-1);
+//			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
+//			
 			//sboxes
-			BitSet boxResult,slice;
+			BitSet boxResult = new BitSet(0);
+			int boxResultLength = 0;
+			BitSet slice  = new BitSet(blockSize/(2*numSBoxes));
+			
 			for(int box =0; box < numSBoxes; box++) {
-				slice = subSet(effectivePerm,(blockSize/(2*numSBoxes))*box,box+blockSize/(2*numSBoxes));
-				debugln("\tRound("+round+") sbox("+box+") slice: " + convertToString(slice, blockSize/2));
-				boxResult = sBox(slice,box, blockSize/2);
-
+				debugln("\tRound("+round+") sbox("+box+"): ");
+				//break the expansion perm into equal parts based on the num of sBoxes
+				int sliceStart = (blockSize/numSBoxes)*box;
+				int sliceEnd = sliceStart+(blockSize/numSBoxes);
+				slice = subSet(effectivePerm,sliceStart, sliceEnd) ;
+				
+				//get value from sbox
+				slice = sBox(slice,box, blockSize/2);
+				debugln("\t\tOutput: " + convertToString(slice, blockSize/(2*numSBoxes)));
+				
+				//the result of each sBox is combined
+				appendBitSet(boxResult, slice, boxResultLength);
+				boxResultLength += blockSize/(2*numSBoxes);
+				
+				debugln("\n\tCombined SBox Result: " +convertToString(boxResult, boxResultLength));
+				
 			}
+			debugln("\tAfter Sboxes: " + convertToString(boxResult, boxResultLength));
+			
+			
+			BitSet pBoxResult = permutate(boxResult,pBoxPerm, blockSize/2);
+			debugln("\tRound("+round+") P-Box Result: " + convertToString(pBoxResult, blockSize/2));
+			
+			pBoxResult.xor(leftHalf);
+			debugln("\tRound("+round+") P-Box XORed with L0 Result: " + convertToString(pBoxResult, blockSize/2));
 			
 			debugln("End Round: "+round +"\n");
 		}
 	}
 
-	
-	public BitSet sBox(BitSet in, int boxNum,  int outputLength) {
+	public void appendBitSet(BitSet in, BitSet append, int inputLength) {
+		for(int i = 0; i <= append.length(); i++) {
+			in.set(inputLength++,append.get(i));
+		}
+	}
+	public BitSet sBox(BitSet in, int boxNum,  int inputLength) {
 		int row = getInt(in,rowChoice);
 		int col = getInt(in,colChoice);
-		debugln("Input to Sbox("+boxNum+"):"+convertToString(in, outputLength));
-		debugln("\tRow: "+row);
-		debugln("\tColumn: "+col);
+		debugln("\t\tInput:"+convertToString(in, inputLength));
+		debugln("\t\tRow: "+row);
+		debugln("\t\tColumn: "+col);
 		int num = sBoxes[boxNum][row][col];
-		debugln("\tOutput: "+num);
+		debugln("\t\tOutput(Integer): "+num);
 		return toBitSet(Integer.toBinaryString(num));
 	}
-
+	
+	/*
+	 * Returns the decimal value of a combination of bits from BitSet input. 
+	 * Choice[0] represents the MSB of result, choice[lenght-1] is LSB of result. 
+	 * 
+	 * @param in : used to form a binary number
+	 * @param choice used to select bits from BitSet
+	 * Returns an integer of choices from bitSet.
+	 */
 	public int getInt(BitSet in, int[] choice) {
 		String binary = "";
 		for(int i = 0; i < choice.length; i++) {
@@ -142,8 +180,10 @@ public class SDES {
 	}
 
 	/*
-	 * start -- the begin index, inclusive.
-	 * end -- the end index, inclusive.
+	 * returns a sub-set of the input set.
+	 * @param start -- the begin index, inclusive.
+	 * @param end -- the end index, inclusive.
+	 * @returns the subset of in from start to end
 	 */
 	public BitSet subSet(BitSet in, int start, int end) {
 		BitSet output = new BitSet();
