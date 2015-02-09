@@ -20,20 +20,27 @@ public class TestClass {
 		
 		//commandLine args here?
 		
-		
-		SDES des         =  new SDES();	
+		SDES des = new SDES();	
 		
 		readParams(paramsFile, des, verbose);
 		
+		des.setKey("1100011110");
+		des.setPlainText("00101000");
 		des.encrypt();
 	}
 	
+
 	public static void readParams(String fileName, SDES des, boolean verbose) {
 
 		//String filename = args[0];
 		String filename = "params.txt"; //default params.txt, comment this out and uncomment line above.  Just using this for easy testing
 		String string;
 		String[] parameters = new String[6];
+		/* 
+		 * These are values used for testing, 
+		 * but will be overwritten once readable from params.txt 
+		 */
+
 		int PC1[]        = {3,5,2,7,4,10,1,9,8,6};
 		int IP[]         = {2, 6, 3, 1, 4, 8, 5, 7};
 		int inverse_IP[] = {4, 1, 3, 5, 7, 2, 8, 6};
@@ -52,61 +59,61 @@ public class TestClass {
 		try {
 			File file = new File(filename);
 
-	    	FileReader fr = new FileReader(file.getAbsolutePath());
-	    	BufferedReader br = new BufferedReader(fr);
+			FileReader fr = new FileReader(file.getAbsolutePath());
+			BufferedReader br = new BufferedReader(fr);
 
-	    	//read in first 5 params
-	    	for(int i=0; i<5; i++){ //assumes params.txt is in format of int (tab) comments, with the int being less than 3 digits long
-	    		string = br.readLine();
-	    		parameters[i] = string.substring(0, 2);
-	    		//System.out.println(parameters[i]);
-	    	}
-	    
-	/*		//set params
-	    	des.setBlockSize(Integer.parseInt(parameters[0]));
-	    	des.setKeySize(Integer.parseInt(parameters[1]));
-	    	des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
-	    	des.setRoundKeySize(Integer.parseInt(parameters[3]));
-	    	des.setNumberofRounds(Integer.parseInt(parameters[4]));
-	    
-	*/
-	    
-	    	//read in PC-1
-	    	string = br.readLine();
-	    	String[] fullpc1 = string.split(" "); //only need first 10, rest is comments
-	    	String[] perc1 = new String[10];
-	    	int[] permc1 = new int[10];
-	    	String[] fix = fullpc1[9].split("/");
-	    	fullpc1[9] = fix[0];
-	    
-	    	for (int i=0; i<10; i++){
-	    		perc1[i] = fullpc1[i];
-	    		//permc1[i] = Integer.parseInt(perc1[i]);
-	    	}
-	    	//System.out.println(Arrays.toString(permc1));
-	    
-	    
-	    	//read in PC-2
-	    	string = br.readLine();
-	    	String[] fullpc2 = string.split(" ");
-	    	String[] perc2 = new String[8];
-	    	int[] permc2 = new int[8];
-	    	for (int i=0; i<8; i++){
-	    		perc2[i] = fullpc2[i];
+			//read in first 5 params
+			for(int i=0; i<5; i++){ //assumes params.txt is in format of int (tab) comments, with the int being less than 3 digits long
+				string = br.readLine();
+				parameters[i] = string.substring(0, 2);
+				//System.out.println(parameters[i]);
+			}
 
-	    	}
-	    	//System.out.println(Arrays.toString(perc2));
-	    
-	    	//set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
-	    	for (int i=0; i<9; i++){
-	    	//setPc1((perc1));
-	    
-	    	}
-	    	for (int i=0; i<8; i++){
-	    
-	    	}
-	    
-	    	br.close();
+			/*		//set params
+			des.setBlockSize(Integer.parseInt(parameters[0]));
+			des.setKeySize(Integer.parseInt(parameters[1]));
+			des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
+			des.setRoundKeySize(Integer.parseInt(parameters[3]));
+			des.setNumberofRounds(Integer.parseInt(parameters[4]));
+
+			*/
+
+			//read in PC-1
+			string = br.readLine();
+			String[] fullpc1 = string.split(" "); //only need first 10, rest is comments
+			String[] perc1 = new String[10];
+			int[] permc1 = new int[10];
+			String[] fix = fullpc1[9].split("/");
+			fullpc1[9] = fix[0];
+
+			for (int i=0; i<10; i++){
+				perc1[i] = fullpc1[i];
+				//permc1[i] = Integer.parseInt(perc1[i]);
+			}
+			//System.out.println(Arrays.toString(permc1));
+
+
+			//read in PC-2
+			string = br.readLine();
+			String[] fullpc2 = string.split(" ");
+			String[] perc2 = new String[8];
+			int[] permc2 = new int[8];
+			for (int i=0; i<8; i++){
+				perc2[i] = fullpc2[i];
+
+			}
+			//System.out.println(Arrays.toString(perc2));
+
+			//set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
+			for (int i=0; i<9; i++){
+			//setPc1((perc1));
+
+			}
+			for (int i=0; i<8; i++){
+
+			}
+
+			br.close();
 		}
 		catch(Exception e) {
 			System.out.println("There was an error reading params from: "+fileName);
@@ -129,8 +136,6 @@ public class TestClass {
 		des.setBlockSize(8);
 		des.setRotationSchedule(new int[]{1,2});
 		des.setVerbose(verbose);
-		des.setKey("0110101100");
-		des.setPlainText("10100101");
 		
 	}
 	/* 

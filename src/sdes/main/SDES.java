@@ -19,6 +19,7 @@ public class SDES {
 	private int rowChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the row
 	private int colChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the col
 	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
+	private int sBoxLenth;
 	private int pBoxPerm[];				//P-box transposition permutation 
 	private boolean verbose;
 	private BitSet key;
@@ -28,7 +29,8 @@ public class SDES {
 		//maybe confirm that all variables are correct?
 		//length of plaintext == blocklength
 		//length of key == keysize
-		debugln("plainText:" + convertToString(plainText, blockSize));
+		debugln("plainText: " + convertToString(plainText, blockSize));
+		debugln("key: " + convertToString(key, keySize));
 		BitSet cipher = permutate(plainText, initialPerm, blockSize);
 		debugln("InitialPermutation result: " + convertToString(cipher,blockSize));
 			
@@ -48,10 +50,10 @@ public class SDES {
 			debugln("\tRound("+round+") R0, EP result: " + convertToString(effectivePerm, blockSize));
 			
 			//generate Round Key
-			key = this.generateSubkey(key,round);
+			BitSet subKey = this.generateSubkey(key,round);
 			
 			// XOR result of EP with subkey
-			effectivePerm.xor(key);
+			effectivePerm.xor(subKey);
 			debugln("\tRound("+round+") EP xor subkey result: " + convertToString(effectivePerm, blockSize));
 			
 //			//left and right half after EP XOR subkey
@@ -91,16 +93,36 @@ public class SDES {
 			
 			pBoxResult.xor(leftHalf);
 			debugln("\tRound("+round+") P-Box XORed with L0 Result: " + convertToString(pBoxResult, blockSize/2));
-			
+			appendBitSet(cipher,rightHalf,0);
+			appendBitSet(cipher, pBoxResult,blockSize/2);
+			debugln("\tRound("+round+") Cipher Result: " + convertToString(cipher, blockSize));
 			debugln("End Round: "+round +"\n");
 		}
-	}
+		BitSet result = new BitSet();
+		//swap after last round
+		appendBitSet(result,subSet(cipher,blockSize/2,blockSize),0);
+		appendBitSet(result,subSet(cipher,0,blockSize/2),blockSize/2);
 
+		//perform Inverse IP on result
+		result = permutate(result,inverseInitialPerm,blockSize);
+		debugln("Cipher Result: " + convertToString(result, blockSize));
+			
+
+	}
+	/**
+	 * Given BitSet A and B the result will be A appended with B. 
+	 *
+	 * 
+	 * @param in          [BitSet to modify]
+	 * @param append      [bitSet for source to append]
+	 * @param inputLength [startLength of input BitSet]
+	 */
 	public void appendBitSet(BitSet in, BitSet append, int inputLength) {
 		for(int i = 0; i <= append.length(); i++) {
 			in.set(inputLength++,append.get(i));
 		}
 	}
+	
 	public BitSet sBox(BitSet in, int boxNum,  int inputLength) {
 		int row = getInt(in,rowChoice);
 		int col = getInt(in,colChoice);
@@ -165,7 +187,9 @@ public class SDES {
 		for(int i=start; i <= end-amount; i++){
 			output.set(i, in.get(i+amount));
 		}
+		System.out.println("before replacing end: " + convertToString(output,effectiveKeySize));
 		for(int i=0; i<amount; i++) {
+			System.out.println("--Setting pos: "+(end-amount+1+i) + " to "+in.get(start+i));
 			output.set(end-amount+1+i, in.get(start+i));
 		}
 		return output;
@@ -347,6 +371,7 @@ public class SDES {
 	}
 
 	public int getNumSBoxes() {
+		this.sBoxes = new int[numSBoxes][][];
 		return this.numSBoxes;
 	}
 
@@ -380,6 +405,10 @@ public class SDES {
 
 	public void setSBoxes(int[][][] boxes) {
 		this.sBoxes = boxes;
+	}
+	
+	public void setSbox(int[][] sbox, int boxNum) {
+		this.sBoxes[boxNum] = sbox;
 	}
 
 }
