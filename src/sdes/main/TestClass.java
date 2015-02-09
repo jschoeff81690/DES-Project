@@ -105,6 +105,102 @@ public class TestClass {
 	    	for (int i=0; i<8; i++){
 	    
 	    	}
+
+                //read and set left rotation schedule
+                br.readLine(); //get rid of the blank line
+                string = br.readLine();
+                String[] rsc = string.split(" "); // rs[1] = 2 //comments
+                fix = rsc[1].split("/"); //removing the comments so rs[1] = 2
+                rsc[1] = fix[0];
+                int[] rs;
+                rs[0] = Integer.parseInt(rsc[0]);
+                rs[1] = Integer.parseInt(rsc[1]);
+                des.setRotationSchedule(rs);
+                
+                
+                // int [] IP = null;
+                // read and set IP
+                string = br.readLine();
+                String[] initP = string.split(" ");
+                fix = initP[7].split("/");
+                initP[7] = fix[0];
+                for (int i=0; i<8; i++){
+                    IP[i] = Integer.parseInt(initP[i]);
+                }
+                des.setInitialPerm(IP); // IP is int array
+                
+                
+                // read and set EP
+                // int EP[] = null;
+                string = br.readLine();
+                String[] exP = string.split(" ");
+                fix = exP[7].split("/");
+                exP[7] = fix[0];
+                 for (int i=0; i<8; i++){
+                    EP[i] = Integer.parseInt(exP[i]);
+                }               
+                des.setExpansionPerm(EP);
+                
+                
+                // read and set P-box transposition
+                // int pBox[] = null;
+                string = br.readLine();
+                String[] pBoxPerm = string.split(" ");
+                fix = pBoxPerm[3].split("/");
+                pBoxPerm[3] = fix[0];
+                 for (int i=0; i<4; i++){
+                    pBox[i] = Integer.parseInt(pBoxPerm[i]);
+                }                   
+                des.setPBoxPerm(pBox);
+                
+                // read and set # of sbox
+                // int numSBoxes;
+                br.readLine(); //get rid of the blank line
+                string = br.readLine();
+                String[] sboxnum = string.split("/"):
+                numSBoxes = Integer.parseInt(sboxnum[0]);
+                des.setNumSBoxes(numSBoxes);
+                
+                
+                // read and set row choice
+                string = br.readLine();
+                String[] rc = string.split(" ");
+                fix = rc[1].split("/");
+                rc[1] = fix[0];
+                for (int i=0; i<2; i++){
+                    rowChoice[i] = Integer.parseInt(rc[i]);
+                }                   
+	        des.setRowChoice(rowChoice);   
+                
+                
+                // read and set col choice
+                string = br.readLine();
+                String[] cc = string.split(" ");
+                fix = cc[1].split("/");
+                cc[1] = fix[0];
+                for (int i=0; i<2; i++){
+                    colChoice[i] = Integer.parseInt(cc[i]);
+                }                 
+                des.setColChoice(colChoice);
+                
+                br.readLine(); //get rid of the blank line
+                br.readLine(); //get rid of the comment line
+                
+                // read and set sBoxes 0 and 1
+                
+                
+                
+                
+                
+                des.setSBoxes(sBoxes);
+                
+                
+ 
+
+
+
+
+
 	    
 	    	br.close();
 		}
