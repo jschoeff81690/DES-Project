@@ -29,7 +29,6 @@ public class TestClass {
         //plaintText: 00101000
         //encrypts to: 10001010
         des.setIsEncryption(true);
-        //des.decrypt();
         des.encrypt();
     }
 
