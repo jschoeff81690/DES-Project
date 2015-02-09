@@ -30,7 +30,6 @@ public class SDES {
 		//maybe confirm that all variables are correct?
 		//length of plaintext == blocklength
 		//length of key == keysize
-		BinaryRoundKeyGenerator keyGen = new BinaryRoundKeyGenerator(keySize, effectiveKeySize, roundKeySize, rotationSchedule, pc1, pc2, verbose);
 		debugln("plainText:" + convertToString(plainText, blockSize));
 		BitSet cipher = permutate(plainText, initialPerm, blockSize);
 		debugln("InitialPermutation: " + convertToString(cipher,blockSize));
@@ -61,14 +60,36 @@ public class SDES {
 			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
 			
 			//sboxes
+			BitSet boxResult,slice;
+			for(int box =0; box < numSBoxes; box++) {
+				slice = subSet(effectivePerm,(blockSize/(2*numSBoxes))*box,box+blockSize/(2*numSBoxes));
+				debugln("\tRound("+round+") sbox("+box+") slice: " + convertToString(slice, blockSize/2));
+				boxResult = sBox(slice,box, blockSize/2);
 
+			}
+			
 			debugln("End Round: "+round +"\n");
 		}
 	}
 
 	
-	public BitSet Sbox(BitSet in, int sBox[][], int outputLength) {
-		
+	public BitSet sBox(BitSet in, int boxNum,  int outputLength) {
+		int row = getInt(in,rowChoice);
+		int col = getInt(in,colChoice);
+		debugln("Input to Sbox("+boxNum+"):"+convertToString(in, outputLength));
+		debugln("\tRow: "+row);
+		debugln("\tColumn: "+col);
+		int num = sBoxes[boxNum][row][col];
+		debugln("\tOutput: "+num);
+		return toBitSet(Integer.toBinaryString(num));
+	}
+
+	public int getInt(BitSet in, int[] choice) {
+		String binary = "";
+		for(int i = 0; i < choice.length; i++) {
+			binary += (in.get(choice[i]-1)) ? "1" : "0";
+		}
+		return Integer.parseInt(binary, 2);
 	}
 	
 	public BitSet generateSubkey(BitSet key, int round) {
