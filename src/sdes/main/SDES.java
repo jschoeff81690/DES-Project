@@ -21,7 +21,8 @@ public class SDES {
 	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
 	private int sBoxLenth;
 	private int pBoxPerm[];				//P-box transposition permutation 
-	private boolean verbose;
+	private boolean verbose;			//P-box transposition permutation 
+	private boolean isEncryption;
 	private BitSet key;
 	private BitSet plainText;
 	
@@ -32,11 +33,101 @@ public class SDES {
 		debugln("plainText: " + convertToString(plainText, blockSize));
 		debugln("key: " + convertToString(key, keySize));
 		BitSet cipher = permutate(plainText, initialPerm, blockSize);
+
 		debugln("InitialPermutation result: " + convertToString(cipher,blockSize));
 			
 
 		//loop for rounds of encrypt
 		for (int round = 1; round <= numberOfRounds; round++) {
+			debugln("\nBegin Round: "+round);
+
+			//Start round, Split result of Initial Perm into Lo and Ro
+			BitSet leftHalf = subSet(cipher,0,blockSize/2-1);
+			debugln("\tRound("+round+") Lo: " + convertToString(leftHalf,blockSize/2));
+			BitSet rightHalf = subSet(cipher,blockSize/2,blockSize-1);
+			debugln("\tRound("+round+") Ro: " + convertToString(rightHalf, blockSize/2));
+			
+			//perform expansion Permutatun on the right half,
+			BitSet effectivePerm = permutate(rightHalf,expansionPerm, blockSize);
+			debugln("\tRound("+round+") R0, EP result: " + convertToString(effectivePerm, blockSize));
+			
+			//generate Round Key
+			int keyRound = (isEncryption)? round : numberOfRounds-round+1;
+			BitSet subKey = this.generateSubkey(key,keyRound);
+			
+			// XOR result of EP with subkey
+			effectivePerm.xor(subKey);
+			debugln("\tRound("+round+") EP xor subkey result: " + convertToString(effectivePerm, blockSize));
+			
+//			//left and right half after EP XOR subkey
+//			leftHalf = subSet(effectivePerm,0,blockSize/2-1);
+//			debugln("\tRound("+round+") L0: " + convertToString(leftHalf,blockSize/2));
+//			rightHalf = subSet(effectivePerm,blockSize/2,blockSize-1);
+//			debugln("\tRound("+round+") R0: " + convertToString(rightHalf, blockSize/2));
+//			
+			//sboxes
+			BitSet boxResult = new BitSet(0);
+			int boxResultLength = 0;
+			BitSet slice  = new BitSet(blockSize/(2*numSBoxes));
+			
+			for(int box =0; box < numSBoxes; box++) {
+				debugln("\tRound("+round+") sbox("+box+"): ");
+				//break the expansion perm into equal parts based on the num of sBoxes
+				int sliceStart = (blockSize/numSBoxes)*box;
+				int sliceEnd = sliceStart+(blockSize/numSBoxes);
+				slice = subSet(effectivePerm,sliceStart, sliceEnd) ;
+				
+				//get value from sbox
+				slice = sBox(slice,box, blockSize/2);
+				debugln("\t\tOutput: " + convertToString(slice, blockSize/(2*numSBoxes)));
+				
+				//the result of each sBox is combined
+				appendBitSet(boxResult, slice, boxResultLength);
+				boxResultLength += blockSize/(2*numSBoxes);
+				
+				debugln("\n\tCombined SBox Result: " +convertToString(boxResult, boxResultLength));
+				
+			}
+			debugln("\tAfter Sboxes: " + convertToString(boxResult, boxResultLength));
+			
+			
+			BitSet pBoxResult = permutate(boxResult,pBoxPerm, blockSize/2);
+			debugln("\tRound("+round+") P-Box Result: " + convertToString(pBoxResult, blockSize/2));
+			
+			pBoxResult.xor(leftHalf);
+			debugln("\tRound("+round+") P-Box XORed with L0 Result: " + convertToString(pBoxResult, blockSize/2));
+			appendBitSet(cipher,rightHalf,0);
+			appendBitSet(cipher, pBoxResult,blockSize/2);
+			debugln("\tRound("+round+") Cipher Result: " + convertToString(cipher, blockSize));
+			debugln("End Round: "+round +"\n");
+		}
+		BitSet result = new BitSet();
+		//swap after last round
+		appendBitSet(result,subSet(cipher,blockSize/2,blockSize),0);
+		appendBitSet(result,subSet(cipher,0,blockSize/2),blockSize/2);
+
+		//perform Inverse IP on result
+			result = permutate(result,inverseInitialPerm,blockSize);
+
+		debugln("Cipher Result: " + convertToString(result, blockSize));
+			
+
+	}
+
+	public void decrypt() {
+		//maybe confirm that all variables are correct?
+		//length of plaintext == blocklength
+		//length of key == keysize
+		debugln("plainText: " + convertToString(plainText, blockSize));
+		debugln("key: " + convertToString(key, keySize));
+		BitSet cipher;
+			cipher = permutate(plainText, initialPerm, blockSize);
+
+		debugln("InitialPermutation result: " + convertToString(cipher,blockSize));
+			
+
+		//loop for rounds of encrypt
+		for (int round = numberOfRounds; round >=1; round--) {
 			debugln("\nBegin Round: "+round);
 
 			//Start round, Split result of Initial Perm into Lo and Ro
@@ -105,10 +196,12 @@ public class SDES {
 
 		//perform Inverse IP on result
 		result = permutate(result,inverseInitialPerm,blockSize);
+
 		debugln("Cipher Result: " + convertToString(result, blockSize));
 			
 
 	}
+
 	/**
 	 * Given BitSet A and B the result will be A appended with B. 
 	 *
@@ -183,13 +276,11 @@ public class SDES {
 	 * 	
 	 */
 	public BitSet rotateLeftSubstring(BitSet in, int start, int end, int amount) {
-		BitSet output = in;
+		BitSet output = (BitSet)in.clone();
 		for(int i=start; i <= end-amount; i++){
 			output.set(i, in.get(i+amount));
 		}
-		System.out.println("before replacing end: " + convertToString(output,effectiveKeySize));
 		for(int i=0; i<amount; i++) {
-			System.out.println("--Setting pos: "+(end-amount+1+i) + " to "+in.get(start+i));
 			output.set(end-amount+1+i, in.get(start+i));
 		}
 		return output;
@@ -277,6 +368,13 @@ public class SDES {
 	}
 	public boolean getVerbose() {
 		return this.verbose;
+	}
+
+	public void setIsEncryption(boolean e) {
+		this.isEncryption = e;
+	}
+	public boolean getIsEncryption() {
+		return this.isEncryption;
 	}
 	public void setBlockSize(int num) {
 		this.blockSize = num;
@@ -406,7 +504,7 @@ public class SDES {
 	public void setSBoxes(int[][][] boxes) {
 		this.sBoxes = boxes;
 	}
-	
+
 	public void setSbox(int[][] sbox, int boxNum) {
 		this.sBoxes[boxNum] = sbox;
 	}

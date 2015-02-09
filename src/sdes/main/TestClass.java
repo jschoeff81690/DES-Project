@@ -26,6 +26,10 @@ public class TestClass {
 
         des.setKey("1100011110");
         des.setPlainText("00101000");
+        //plaintText: 00101000
+        //encrypts to: 10001010
+        des.setIsEncryption(true);
+        //des.decrypt();
         des.encrypt();
     }
 
@@ -118,12 +122,12 @@ public class TestClass {
             fix = rsc[1].split("/"); //removing the comments so rs[1] = 2
             rsc[1] = fix[0];
             /*
-            
-			I'm gettting compile error, you need to initialize rs before setting rs[0]
+
+            I'm gettting compile error, you need to initialize rs before setting rs[00101000]
 
 
              */
-            int[] rs;
+            int[] rs = new int[2];
             rs[0] = Integer.parseInt(rsc[0]);
             rs[1] = Integer.parseInt(rsc[1]);
             des.setRotationSchedule(rs);
@@ -211,6 +215,7 @@ public class TestClass {
             System.out.println("There was an error reading params from: " + fileName);
             System.out.println("Error: " + e.getMessage());
         }
+
         des.setPBoxPerm(pBox);
         des.setRowChoice(rowChoice);
         des.setColChoice(colChoice);
@@ -226,7 +231,7 @@ public class TestClass {
         des.setRoundKeySize(8);
         des.setNumberOfRounds(2);
         des.setBlockSize(8);
-        des.setRotationSchedule(new int[] {1, 2});
+        des.setRotationSchedule(new int[] {1, 3});
         des.setVerbose(verbose);
 
     }
