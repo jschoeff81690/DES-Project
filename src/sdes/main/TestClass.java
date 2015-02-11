@@ -113,24 +113,18 @@ public class TestClass {
 
 
             //read and set left rotation schedule
-            br.readLine(); //get rid of the blank line
             string = br.readLine();
             String[] rsc = string.split(" "); // rs[1] = 2 //comments
             fix = rsc[1].split("/"); //removing the comments so rs[1] = 2
             rsc[1] = fix[0];
-            /*
 
-            I'm gettting compile error, you need to initialize rs before setting rs[00101000]
-
-
-             */
             int[] rs = new int[2];
-            rs[0] = Integer.parseInt(rsc[0]);
-            rs[1] = Integer.parseInt(rsc[1]);
+            rs[0] = Integer.parseInt(rsc[0].trim(), 16);
+            rs[1] = Integer.parseInt(rsc[1].trim(), 16);
             des.setRotationSchedule(rs);
 
 
-            // int [] IP = null;
+            //int [] IP = new int[8];
             // read and set IP
             string = br.readLine();
             String[] initP = string.split(" ");
@@ -139,11 +133,12 @@ public class TestClass {
             for (int i = 0; i < 8; i++) {
                 IP[i] = Integer.parseInt(initP[i]);
             }
+            //System.out.println(Arrays.toString(IP));
             des.setInitialPerm(IP); // IP is int array
 
 
             // read and set EP
-            // int EP[] = null;
+            // int EP[] = new int[8];
             string = br.readLine();
             String[] exP = string.split(" ");
             fix = exP[7].split("/");
@@ -151,6 +146,7 @@ public class TestClass {
             for (int i = 0; i < 8; i++) {
                 EP[i] = Integer.parseInt(exP[i]);
             }
+            //System.out.println(Arrays.toString(EP));
             des.setExpansionPerm(EP);
 
 
@@ -167,7 +163,7 @@ public class TestClass {
 
             // read and set # of sbox
             // int numSBoxes;
-            br.readLine(); //get rid of the blank line
+            
             string = br.readLine();
             String[] sboxnum = string.split("/");
             numSBoxes = Integer.parseInt(sboxnum[0]);
@@ -195,7 +191,7 @@ public class TestClass {
             }
             des.setColChoice(colChoice);
 
-            br.readLine(); //get rid of the blank line
+            
             br.readLine(); //get rid of the comment line
 
             // read and set sBoxes 0 and 1
