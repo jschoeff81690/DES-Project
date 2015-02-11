@@ -275,7 +275,7 @@ public class TestClass {
 
 
 
-            des.setSBoxes(sBoxes);
+            //des.setSBoxes(sBoxes);
 
             br.close();
         } catch (Exception e) {
