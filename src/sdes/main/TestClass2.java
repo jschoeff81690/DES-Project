@@ -28,10 +28,10 @@ public class TestClass2 {
         readParams(paramsFile, des, verbose);
 
         des.setKey("1100011110");
-        des.setPlainText("00101000");
+        des.setPlainText("10001010");
         //plaintText: 00101000
         //encrypts to: 10001010
-        des.setIsEncryption(true);
+        des.setIsEncryption(false);
         des.encrypt();
     }
 

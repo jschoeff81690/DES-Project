@@ -51,7 +51,7 @@ public class SDES {
 			debugln("\tRound("+round+") R0, EP result: " + convertToString(effectivePerm, blockSize));
 			
 			//generate Round Key
-			int keyRound = (isEncryption)? round : numberOfRounds-round+1;
+			int keyRound = (isEncryption) ? round : numberOfRounds-round+1;
 			BitSet subKey = this.generateSubkey(key,keyRound);
 			
 			// XOR result of EP with subkey
@@ -204,7 +204,7 @@ public class SDES {
 		}
 		return output;
 	}
-	
+
 	/*
 	 * returns a sub-set of the input set.
 	 * @param start -- the begin index, inclusive.
