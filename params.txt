@@ -1,12 +1,14 @@
 8// block size 4 bits
 10	// key size (input length of PC-1)
 10	// effective key size (output length of PC-1)
+
 8	// round key size (output length of EP)
 2	// 2 rounds
 3 5 2 7 4 10 1 9 8 6	// PC-1 aka PC-10 in S-DES
 6 3 7 4 8 5 10 9 	// PD-2 aka PC-8 in S-DES
 1 2	// left rotation schedule – shift once before round 1, then two more times before round 2
 2 6 3 1 4 8 5 7 	// Initial Permutation
+
 4 1 2 3 2 3 4 1 	// Expansion Permutation
 2	// 2 S-Boxes
 1 4	// Row selection bits

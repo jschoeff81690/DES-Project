@@ -106,7 +106,7 @@ public class SDES {
 		appendBitSet(result,subSet(cipher,0,blockSize/2),blockSize/2);
 
 		//perform Inverse IP on result
-			result = permutate(result,inverseInitialPerm,blockSize);
+		result = permutate(result,inverseInitialPerm,blockSize);
 
 		debugln("Cipher Result: " + convertToString(result, blockSize));
 			
@@ -204,7 +204,7 @@ public class SDES {
 		}
 		return output;
 	}
-
+	
 	/*
 	 * returns a sub-set of the input set.
 	 * @param start -- the begin index, inclusive.
@@ -376,11 +376,11 @@ public class SDES {
 	}
 
 	public void setNumSBoxes(int num) {
+		this.sBoxes = new int[num][][];
 		this.numSBoxes = num;
 	}
 
 	public int getNumSBoxes() {
-		this.sBoxes = new int[numSBoxes][][];
 		return this.numSBoxes;
 	}
 
