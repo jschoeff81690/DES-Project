@@ -127,6 +127,9 @@ public class TestClass {
             //int [] IP = new int[8];
             // read and set IP
             string = br.readLine();
+            if (string.equals("")){ //check for blank line
+               string = br.readLine();
+            }
             String[] initP = string.split(" ");
             fix = initP[7].split("/");
             initP[7] = fix[0];
@@ -165,6 +168,9 @@ public class TestClass {
             // int numSBoxes;
             
             string = br.readLine();
+            if (string.equals("")){
+               string = br.readLine();
+            }
             String[] sboxnum = string.split("/");
             numSBoxes = Integer.parseInt(sboxnum[0]);
             des.setNumSBoxes(numSBoxes);
@@ -192,11 +198,14 @@ public class TestClass {
             des.setColChoice(colChoice);
 
             
-            br.readLine(); //get rid of the comment line
+           
 
             // read and set sBoxes 0 and 1
                 
-                string = br.readLine();
+            string = br.readLine();
+            if (string.equals("")){
+               string = br.readLine();
+            }
                 String [] r11 = string.split(" ");
                 fix = r11[3].split("/");
                 r11[3] = fix[0];
