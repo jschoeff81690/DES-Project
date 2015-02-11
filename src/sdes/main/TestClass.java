@@ -71,14 +71,14 @@ public class TestClass {
                 //System.out.println(parameters[i]);
             }
 
-            /*      //set params
+                 //set params
                     des.setBlockSize(Integer.parseInt(parameters[0]));
                     des.setKeySize(Integer.parseInt(parameters[1]));
                     des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
                     des.setRoundKeySize(Integer.parseInt(parameters[3]));
                     des.setNumberofRounds(Integer.parseInt(parameters[4]));
 
-            */
+            
 
             //read in PC-1
             string = br.readLine();
@@ -90,7 +90,7 @@ public class TestClass {
 
             for (int i = 0; i < 10; i++) {
                 perc1[i] = fullpc1[i];
-                //permc1[i] = Integer.parseInt(perc1[i]);
+                permc1[i] = Integer.parseInt(perc1[i].trim(), 16);
             }
             //System.out.println(Arrays.toString(permc1));
 
@@ -102,17 +102,15 @@ public class TestClass {
             int[] permc2 = new int[8];
             for (int i = 0; i < 8; i++) {
                 perc2[i] = fullpc2[i];
+                permc2[i] = Integer.parseInt(perc2[i].trim(), 16);
             }
-            //System.out.println(Arrays.toString(perc2));
+            //System.out.println(Arrays.toString(permc2));
 
-            //set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
-            for (int i = 0; i < 9; i++) {
-                //setPc1((perc1));
+            //set pc1 and pc2
+                des.setPc1((permc1));
+                des.setPc2((permc2));
+  
 
-            }
-            for (int i = 0; i < 8; i++) {
-
-            }
 
             //read and set left rotation schedule
             br.readLine(); //get rid of the blank line
