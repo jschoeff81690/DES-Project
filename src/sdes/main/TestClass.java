@@ -2,7 +2,9 @@ package sdes.main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.math.BigInteger;
 import java.util.BitSet;
+import java.util.Scanner;
 
 
 
@@ -12,7 +14,7 @@ public class TestClass {
     /**
      * @param args
      */
-    public static void main(String[] args) {
+  /*  public static void main(String[] args) {
 
         //values from command line args
         boolean verbose = true;
@@ -30,7 +32,112 @@ public class TestClass {
         //encrypts to: 10001010
         des.setIsEncryption(true);
         des.encrypt();
-    }
+    } */
+	
+	public static void main(String[] args) { 
+
+		//we can change these to command line args by
+		//   System.out.println("Argument#1: " + args[0]);
+		
+		boolean verbose = true;
+        String paramsFile = "params.txt";
+		
+        SDES des = new SDES();
+        readParams(paramsFile, des, verbose);
+        
+	String inputFileName = "-i";
+	String special = "--";
+	String outputFileName = "-o";
+	String encrypt = "-e";
+	String decrypt = "-d";
+	String key		= "-k";
+	String param = "-p";
+	String	steps = "-s";
+	String hex = "-x";
+	
+	//need to make loop to run until told to stop
+	
+	Scanner in = new Scanner (System.in);
+	String whole = in.nextLine(); // receives everything in the next line till enter
+
+	String command = whole.substring(0, 2);
+	String userInput = whole.substring(2); //userInput will be saved and used constantly key
+	
+	if( command.equalsIgnoreCase(inputFileName) || command.equalsIgnoreCase(special) ) {
+		//checks to see if input is = to -i reguardless of case
+		
+	//////	call public static void readParams(userInput)
+		
+	//	System.out.println(command);
+	}
+	else if( command.equalsIgnoreCase(outputFileName) ||command.equalsIgnoreCase(special) ){
+	
+		//should set verbose so nothing is printed out??
+		// if something is printed to the console it needs to be printed to the outputfile through this
+		//if statement?
+		//???will this take everything written to the console and write it to a txt file?
+					//---see output.java & args.java
+		
+	//System.out.println(outputFileName);
+	
+	}else if( command.equalsIgnoreCase(encrypt)) {
+		
+			//call encrypt process stop before decrypting 
+			//System.out.println(encrypt);
+	}else if(command.equalsIgnoreCase(decrypt)) {
+		
+		//begin decrypt process
+		
+	}else if(command.equalsIgnoreCase(key)) {
+	
+		//use this as example
+		////////////-k49204c6f7665204a61766121
+		 //String hex = "78654654";
+		    StringBuilder output = new StringBuilder();
+		    for (int i = 0; i < userInput.length(); i+=2) {
+		        String str = userInput.substring(i, i+2);
+		        output.append((char)Integer.parseInt(str, 16));
+		    } //output is the string of converted hex to words
+		   // System.out.println(output);
+		
+		
+	}else if( command.equalsIgnoreCase(param)) {
+	
+		readParams(userInput, des, verbose);
+		//test
+		//System.out.println(param);
+	}else if( command.equalsIgnoreCase(steps)) {
+		//System.out.println(steps);
+		//this will goto intermediate steps (round keys, left & right side input to each round
+		//and print them
+		//--should be just a goto function
+		
+		
+	}else if( command.equalsIgnoreCase(hex)) {
+		//System.out.println(hex);
+		
+		//take user input send from hex -> binary
+		String binaryUserInput = hexToBinary(userInput); 
+		
+		//////////send the binary through encrpyt etc
+		
+		////receive new binary 
+			//String binaryback2Hex = binaryToHex(new binary from sdes)		    
+	}
+
+					}	
+	
+	//hex -> binary
+	public static String hexToBinary(String hex) {
+	    return new BigInteger(hex, 16).toString(2);
+	}
+	//bin-> hex
+	public static String binaryToHex(String bin) {
+		String back2hex;
+		return back2hex = Long.toHexString(Long.parseLong(bin,2));
+	}
+
+	
 
 
     public static void readParams(String fileName, SDES des, boolean verbose) {
@@ -76,7 +183,7 @@ public class TestClass {
                     des.setKeySize(Integer.parseInt(parameters[1]));
                     des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
                     des.setRoundKeySize(Integer.parseInt(parameters[3]));
-                    des.setNumberofRounds(Integer.parseInt(parameters[4]));
+                    des.setNumberOfRounds(Integer.parseInt(parameters[4]));
 
             
 

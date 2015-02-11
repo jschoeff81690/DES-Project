@@ -1,4 +1,4 @@
-8	// block size 4 bits
+8// block size 4 bits
 10	// key size (input length of PC-1)
 10	// effective key size (output length of PC-1)
 
