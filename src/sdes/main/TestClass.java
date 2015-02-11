@@ -201,8 +201,76 @@ public class TestClass {
             br.readLine(); //get rid of the comment line
 
             // read and set sBoxes 0 and 1
-            //can now des.setSbox(sbox0Array0, 0); //sbox 0
-            //can now des.setSbox(sbox0Array1, 1); //sbox 1
+                
+                string = br.readLine();
+                String [] r11 = string.split(" ");
+                fix = r11[3].split("/");
+                r11[3] = fix[0];
+                for (int i=0; i<4; i++){
+                    sbox0[1][i] = Integer.parseInt(r11[i]);
+                }
+
+                string = br.readLine();
+                String [] r12 = string.split(" ");
+                fix = r12[3].split("/");
+                r12[3] = fix[0];              
+                for (int i=0; i<4; i++){
+                    sbox0[2][i] = Integer.parseInt(r12[i]);
+                }  
+                
+                string = br.readLine();
+                String [] r13 = string.split(" ");
+                fix = r13[3].split("/");
+                r13[3] = fix[0];               
+                for (int i=0; i<4; i++){
+                    sbox0[3][i] = Integer.parseInt(r13[i]);
+                }
+                
+                string = br.readLine();
+                String [] r14 = string.split(" ");
+                fix = r14[3].split("/");
+                r14[3] = fix[0];                
+                for (int i=0; i<4; i++){
+                    sbox0[4][i] = Integer.parseInt(r14[i]);
+                }
+                des.setSbox(sbox0, 0); //sbox 0
+                
+                
+                br.readLine(); //get rid of the comment line
+                
+                //read and set sbox1
+                string = br.readLine();
+                String [] r21 = string.split(" ");
+                fix = r21[3].split("/");
+                r21[3] = fix[0];
+                for (int i=0; i<4; i++){
+                    sbox1[1][i] = Integer.parseInt(r21[i]);
+                }
+
+                string = br.readLine();
+                String [] r22 = string.split(" ");
+                fix = r22[3].split("/");
+                r22[3] = fix[0];              
+                for (int i=0; i<4; i++){
+                    sbox1[2][i] = Integer.parseInt(r22[i]);
+                }  
+                
+                string = br.readLine();
+                String [] r23 = string.split(" ");
+                fix = r23[3].split("/");
+                r23[3] = fix[0];               
+                for (int i=0; i<4; i++){
+                    sbox1[3][i] = Integer.parseInt(r23[i]);
+                }
+                
+                string = br.readLine();
+                String [] r24 = string.split(" ");
+                fix = r24[3].split("/");
+                r24[3] = fix[0];                
+                for (int i=0; i<4; i++){
+                    sbox1[4][i] = Integer.parseInt(r24[i]);
+                }
+                des.setSbox(sbox1, 1); //sbox 1
 
 
 
