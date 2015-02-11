@@ -19,7 +19,6 @@ public class SDES {
 	private int rowChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the row
 	private int colChoice[];			//Permuted choice to select the bits from the input to an S-box that are used to select the col
 	private int[][][] sBoxes; 			//ith S-box substitution - array of 2^x rows and 2^y columns, where x = R/T - B/2T, and y = B/2T
-	private int sBoxLenth;
 	private int pBoxPerm[];				//P-box transposition permutation 
 	private boolean verbose;			//P-box transposition permutation 
 	private boolean isEncryption;
