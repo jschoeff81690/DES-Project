@@ -71,14 +71,14 @@ public class TestClass {
                 //System.out.println(parameters[i]);
             }
 
-                 //set params
+            /*      //set params
                     des.setBlockSize(Integer.parseInt(parameters[0]));
                     des.setKeySize(Integer.parseInt(parameters[1]));
                     des.setEffectiveKeySize(Integer.parseInt(parameters[2]));
                     des.setRoundKeySize(Integer.parseInt(parameters[3]));
                     des.setNumberofRounds(Integer.parseInt(parameters[4]));
 
-            
+            */
 
             //read in PC-1
             string = br.readLine();
@@ -90,7 +90,7 @@ public class TestClass {
 
             for (int i = 0; i < 10; i++) {
                 perc1[i] = fullpc1[i];
-                permc1[i] = Integer.parseInt(perc1[i].trim(), 16);
+                //permc1[i] = Integer.parseInt(perc1[i]);
             }
             //System.out.println(Arrays.toString(permc1));
 
@@ -102,29 +102,37 @@ public class TestClass {
             int[] permc2 = new int[8];
             for (int i = 0; i < 8; i++) {
                 perc2[i] = fullpc2[i];
-                permc2[i] = Integer.parseInt(perc2[i].trim(), 16);
             }
-            //System.out.println(Arrays.toString(permc2));
+            //System.out.println(Arrays.toString(perc2));
 
-            //set pc1 and pc2
-                des.setPc1((permc1));
-                des.setPc2((permc2));
-  
+            //set pc1 and pc2, NEED TO CONVER THE STRING ARRAYS TO HEX FIRST
+            for (int i = 0; i < 9; i++) {
+                //setPc1((perc1));
 
+            }
+            for (int i = 0; i < 8; i++) {
+
+            }
 
             //read and set left rotation schedule
+            br.readLine(); //get rid of the blank line
             string = br.readLine();
             String[] rsc = string.split(" "); // rs[1] = 2 //comments
             fix = rsc[1].split("/"); //removing the comments so rs[1] = 2
             rsc[1] = fix[0];
+            /*
 
+            I'm gettting compile error, you need to initialize rs before setting rs[00101000]
+
+
+             */
             int[] rs = new int[2];
-            rs[0] = Integer.parseInt(rsc[0].trim(), 16);
-            rs[1] = Integer.parseInt(rsc[1].trim(), 16);
+            rs[0] = Integer.parseInt(rsc[0]);
+            rs[1] = Integer.parseInt(rsc[1]);
             des.setRotationSchedule(rs);
 
 
-            //int [] IP = new int[8];
+            // int [] IP = null;
             // read and set IP
             string = br.readLine();
             String[] initP = string.split(" ");
@@ -133,12 +141,11 @@ public class TestClass {
             for (int i = 0; i < 8; i++) {
                 IP[i] = Integer.parseInt(initP[i]);
             }
-            //System.out.println(Arrays.toString(IP));
             des.setInitialPerm(IP); // IP is int array
 
 
             // read and set EP
-            // int EP[] = new int[8];
+            // int EP[] = null;
             string = br.readLine();
             String[] exP = string.split(" ");
             fix = exP[7].split("/");
@@ -146,7 +153,6 @@ public class TestClass {
             for (int i = 0; i < 8; i++) {
                 EP[i] = Integer.parseInt(exP[i]);
             }
-            //System.out.println(Arrays.toString(EP));
             des.setExpansionPerm(EP);
 
 
@@ -163,7 +169,7 @@ public class TestClass {
 
             // read and set # of sbox
             // int numSBoxes;
-            
+            br.readLine(); //get rid of the blank line
             string = br.readLine();
             String[] sboxnum = string.split("/");
             numSBoxes = Integer.parseInt(sboxnum[0]);
@@ -191,85 +197,17 @@ public class TestClass {
             }
             des.setColChoice(colChoice);
 
-            
+            br.readLine(); //get rid of the blank line
             br.readLine(); //get rid of the comment line
 
             // read and set sBoxes 0 and 1
-                
-                string = br.readLine();
-                String [] r11 = string.split(" ");
-                fix = r11[3].split("/");
-                r11[3] = fix[0];
-                for (int i=0; i<4; i++){
-                    sbox0[1][i] = Integer.parseInt(r11[i]);
-                }
-
-                string = br.readLine();
-                String [] r12 = string.split(" ");
-                fix = r12[3].split("/");
-                r12[3] = fix[0];              
-                for (int i=0; i<4; i++){
-                    sbox0[2][i] = Integer.parseInt(r12[i]);
-                }  
-                
-                string = br.readLine();
-                String [] r13 = string.split(" ");
-                fix = r13[3].split("/");
-                r13[3] = fix[0];               
-                for (int i=0; i<4; i++){
-                    sbox0[3][i] = Integer.parseInt(r13[i]);
-                }
-                
-                string = br.readLine();
-                String [] r14 = string.split(" ");
-                fix = r14[3].split("/");
-                r14[3] = fix[0];                
-                for (int i=0; i<4; i++){
-                    sbox0[4][i] = Integer.parseInt(r14[i]);
-                }
-                des.setSbox(sbox0, 0); //sbox 0
-                
-                
-                br.readLine(); //get rid of the comment line
-                
-                //read and set sbox1
-                string = br.readLine();
-                String [] r21 = string.split(" ");
-                fix = r21[3].split("/");
-                r21[3] = fix[0];
-                for (int i=0; i<4; i++){
-                    sbox1[1][i] = Integer.parseInt(r21[i]);
-                }
-
-                string = br.readLine();
-                String [] r22 = string.split(" ");
-                fix = r22[3].split("/");
-                r22[3] = fix[0];              
-                for (int i=0; i<4; i++){
-                    sbox1[2][i] = Integer.parseInt(r22[i]);
-                }  
-                
-                string = br.readLine();
-                String [] r23 = string.split(" ");
-                fix = r23[3].split("/");
-                r23[3] = fix[0];               
-                for (int i=0; i<4; i++){
-                    sbox1[3][i] = Integer.parseInt(r23[i]);
-                }
-                
-                string = br.readLine();
-                String [] r24 = string.split(" ");
-                fix = r24[3].split("/");
-                r24[3] = fix[0];                
-                for (int i=0; i<4; i++){
-                    sbox1[4][i] = Integer.parseInt(r24[i]);
-                }
-                des.setSbox(sbox1, 1); //sbox 1
+            //can now des.setSbox(sbox0Array0, 0); //sbox 0
+            //can now des.setSbox(sbox0Array1, 1); //sbox 1
 
 
 
 
-            //des.setSBoxes(sBoxes);
+            des.setSBoxes(sBoxes);
 
             br.close();
         } catch (Exception e) {
