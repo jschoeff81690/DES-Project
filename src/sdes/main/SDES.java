@@ -106,6 +106,7 @@ public class SDES {
 		appendBitSet(result,subSet(cipher,blockSize/2,blockSize),0);
 		appendBitSet(result,subSet(cipher,0,blockSize/2),blockSize/2);
 
+		debugln("After Swap: " + convertToString(result, blockSize));
 		//perform Inverse IP on result
 		result = permutate(result,inverseInitialPerm,blockSize);
 
@@ -254,6 +255,7 @@ public class SDES {
         String back2hex;
         return back2hex = Long.toHexString(Long.parseLong(bin, 2));
     }
+    
 	public <T> void debug(T output) { 
 		if(verbose)
 			System.out.print(output);

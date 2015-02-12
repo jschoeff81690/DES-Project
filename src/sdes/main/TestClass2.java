@@ -155,13 +155,15 @@ public class TestClass2 {
         if (key.equals(""))
             key  = getLineFromFile(keyFile);
 
-        des.setDisplayHex(hexInput);
         if (hexInput)
              des.setKey(hexToBinary(key, des.getBlockSize()));
         else
             des.setKey(key);
 
+        des.setDisplayHex(hexInput);
+        des.setIsEncryption(encrypt);
         des.setPlainText(plainText);
+        des.setVerbose(verbose);
         //plaintText: 00101000
         //encrypts to: 10001010
         String cipher = des.encrypt();
