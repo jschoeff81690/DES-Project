@@ -54,8 +54,8 @@ public class TestClass2 {
         String keyFile      = "k.txt";
         boolean encrypt     = true;
         boolean verbose     = false;
-        boolean hexInput    = false;
-        boolean binaryInput = false;
+        boolean hexInput    = false; //is the input in form of binary hex?
+        boolean asciiInput = false;  //is the input in binary file or not?
         String key          = "";
         String plainText   = "";
 
@@ -69,10 +69,12 @@ public class TestClass2 {
         String paramCommand          = "-p";
         String stepsCommand         = "-s";
         String hexCommand            = "-x";
+        String asciiCommand            = "-a";
+        String menuCommand            = "-menu";
 
         boolean keepRunning = true;
         Scanner in = new Scanner (System.in);
-        while (keepRunning && args[0].equalsIgnoreCase("--menu")) {
+        while (keepRunning && args[0].equalsIgnoreCase(menuCommand)) {
 
             System.out.println("Interactive Menu: type -R to run encrypt/decryption. Otherwise enter commands");
             System.out.println(">");
@@ -103,26 +105,18 @@ public class TestClass2 {
                 key = output.toString();
 
             } else if ( command.equalsIgnoreCase(paramCommand)) {
-
+                paramsFile = userInput;
                 //readParams(userInput, des, verbose);
                 //test
                 //System.out.println(param);
             } else if ( command.equalsIgnoreCase(stepsCommand)) {
                 verbose = true;
             } else if ( command.equalsIgnoreCase(hexCommand)) {
-                //System.out.println(hex);
                 hexInput =  true;
-                //take user input send from hex -> binary
-                String binaryUserInput = hexToBinary(userInput);
-
-                //////////send the binary through encrpyt etc
-
-                ////receive new binary
-                //String binaryback2Hex = binaryToHex(new binary from sdes)
             }
         }//eof while running
         //If the menu wasnt read, use the commandline args
-        if(!args[0].equalsIgnoreCase("--menu")) {
+        if(!args[0].equalsIgnoreCase(menuCommand)) {
             for(String arg : args) {
                 String command = arg.substring(0, 2);
                 String userInput = arg.substring(2).trim(); //userInput will be saved and used constantly key
@@ -149,30 +143,20 @@ public class TestClass2 {
                     key = output.toString();
 
                 } else if ( command.equalsIgnoreCase(paramCommand)) {
-
-                    //readParams(userInput, des, verbose);
-                    //test
-                    //System.out.println(param);
+                    paramsFile = userInput;
                 } else if ( command.equalsIgnoreCase(stepsCommand)) {
                     verbose = true;
                 } else if ( command.equalsIgnoreCase(hexCommand)) {
-                    //System.out.println(hex);
                     hexInput =  true;
-                    //take user input send from hex -> binary
-                    String binaryUserInput = hexToBinary(userInput);
-
-                    //////////send the binary through encrpyt etc
-
-                    ////receive new binary
-                    //String binaryback2Hex = binaryToHex(new binary from sdes)
                 }
             }
         }
 
         plainText  = getLineFromFile(inputFile);
-        key  = getLineFromFile(keyFile);
+        if(key.equals(""))
+           key  = getLineFromFile(keyFile);
         readParams(paramsFile, des, verbose);
-
+        des.setDisplayHex(hexInput);
         des.setKey(key);
         des.setPlainText(plainText);
         //plaintText: 00101000

@@ -24,6 +24,7 @@ public class SDES {
 	private boolean isEncryption;
 	private BitSet key;
 	private BitSet plainText;
+	private boolean displayHex = false;
 	
 	public String encrypt() {
 		//maybe confirm that all variables are correct?
@@ -134,7 +135,6 @@ public class SDES {
 		debugln("\t\tRow: "+row);
 		debugln("\t\tColumn: "+col);
 		int num = sBoxes[boxNum][row][col];
-		debugln("\t\tOutput(Integer): "+num);
 		return toBitSet(Integer.toBinaryString(num));
 	}
 	
@@ -244,9 +244,16 @@ public class SDES {
 			else 
 				s.append(0);
 		}
-		return s.toString();
+		if(!this.displayHex)
+			return s.toString();
+		else
+			return binaryToHex(s.toString());
 	}
-
+	//bin-> hex
+    public static String binaryToHex(String bin) {
+        String back2hex;
+        return back2hex = Long.toHexString(Long.parseLong(bin, 2));
+    }
 	public <T> void debug(T output) { 
 		if(verbose)
 			System.out.print(output);
@@ -260,6 +267,12 @@ public class SDES {
 		GETters and SETters for SDES class
 
 	 */
+	public void setDisplayHex(boolean b) {
+		this.displayHex = b;
+	}
+	public boolean getDislayHex() {
+		return this.displayHex;
+	}
 	public void setKey(String str) {
 		this.key = toBitSet(str);
 	}
