@@ -28,9 +28,6 @@ public class TestClass2 {
      */
 
     public static void main(String[] args) {
-
-        //we can change these to command line args by
-        System.out.println("Arguments: " + Arrays.toString(args));
         SDES des = new SDES();
 
 
@@ -154,7 +151,6 @@ public class TestClass2 {
         else
             plainText  = getLineFromFile(inputFile);
 
-        System.out.println(plainText);
         if (key.equals(""))
             key  = getLineFromFile(keyFile);
 
@@ -167,7 +163,6 @@ public class TestClass2 {
         des.setPlainText(plainText);
         //plaintText: 00101000
         //encrypts to: 10001010
-        des.setIsEncryption(encrypt);
         String cipher = des.encrypt();
 
         
