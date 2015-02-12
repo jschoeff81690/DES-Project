@@ -65,7 +65,7 @@ public class TestClass2 {
         while (keepRunning && args[0].equalsIgnoreCase(menuCommand)) {
 
             System.out.println("Interactive Menu: type -R to run encrypt/decryption. Otherwise enter commands");
-            System.out.println(">");
+            System.out.print(">");
             String whole = in.nextLine(); // receives everything in the next line till enter
 
             String command = whole.substring(0, 2);
