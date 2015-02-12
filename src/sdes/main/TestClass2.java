@@ -29,7 +29,10 @@ public class TestClass2 {
 
     public static void main(String[] args) {
         SDES des = new SDES();
-
+        if(args.length == 0) {
+            args = new String[1];
+            args[0] = "-menu";
+        }
 
         //Defaults
         String paramsFile   = "params.txt";
@@ -101,7 +104,7 @@ public class TestClass2 {
             } else if ( command.equalsIgnoreCase(asciiCommand)) {
                 asciiInput =  true;
             } else if ( command.equalsIgnoreCase(runCommand)) {
-                hexInput =  true;
+                keepRunning =  false;
             }
         }//eof while running
         //If the menu wasnt read, use the commandline args
@@ -139,9 +142,7 @@ public class TestClass2 {
                     hexInput =  true;
                 } else if ( command.equalsIgnoreCase(asciiCommand)) {
                     asciiInput =  true;
-                } else if ( command.equalsIgnoreCase(runCommand)) {
-                    keepRunning =  false;
-                }
+                } 
             }
         }
 
