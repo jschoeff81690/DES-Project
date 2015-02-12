@@ -25,7 +25,7 @@ public class SDES {
 	private BitSet key;
 	private BitSet plainText;
 	
-	public void encrypt() {
+	public String encrypt() {
 		//maybe confirm that all variables are correct?
 		//length of plaintext == blocklength
 		//length of key == keysize
@@ -110,7 +110,7 @@ public class SDES {
 
 		debugln("Cipher Result: " + convertToString(result, blockSize));
 			
-
+		return convertToString(result, blockSize);
 	}
 
 	/**
