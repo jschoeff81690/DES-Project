@@ -67,10 +67,11 @@ public class TestClass2 {
         String decryptCommand        = "-d";
         String keyCommand            = "-k";
         String paramCommand          = "-p";
-        String stepsCommand         = "-s";
+        String stepsCommand          = "-s";
         String hexCommand            = "-x";
-        String asciiCommand            = "-a";
-        String menuCommand            = "-menu";
+        String asciiCommand          = "-a";
+        String runCommand          = "-R";
+        String menuCommand           = "-menu";
 
         boolean keepRunning = true;
         Scanner in = new Scanner (System.in);
@@ -113,6 +114,8 @@ public class TestClass2 {
                 verbose = true;
             } else if ( command.equalsIgnoreCase(hexCommand)) {
                 hexInput =  true;
+            }else if ( command.equalsIgnoreCase(runCommand)) {
+                hexInput =  true;
             }
         }//eof while running
         //If the menu wasnt read, use the commandline args
@@ -147,7 +150,7 @@ public class TestClass2 {
                 } else if ( command.equalsIgnoreCase(stepsCommand)) {
                     verbose = true;
                 } else if ( command.equalsIgnoreCase(hexCommand)) {
-                    hexInput =  true;
+                    keepRunning =  false;
                 }
             }
         }
