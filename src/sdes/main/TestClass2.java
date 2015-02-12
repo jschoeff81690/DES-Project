@@ -150,14 +150,21 @@ public class TestClass2 {
                 } else if ( command.equalsIgnoreCase(stepsCommand)) {
                     verbose = true;
                 } else if ( command.equalsIgnoreCase(hexCommand)) {
+                    hexInput =  true;
+                }else if ( command.equalsIgnoreCase(runCommand)) {
                     keepRunning =  false;
                 }
             }
         }
+        if(hexInput)
+            plainText  = hexToBinary(getLineFromFile(inputFile));
+        else
+            plainText  = getLineFromFile(inputFile);
 
-        plainText  = getLineFromFile(inputFile);
+        System.out.println(plainText);
         if(key.equals(""))
            key  = getLineFromFile(keyFile);
+
         readParams(paramsFile, des, verbose);
         des.setDisplayHex(hexInput);
         des.setKey(key);
@@ -166,7 +173,12 @@ public class TestClass2 {
         //encrypts to: 10001010
         des.setIsEncryption(encrypt);
         String cipher = des.encrypt();
-        writeToFile(cipher,outputFile);
+
+        if(hexInput)
+            writeToFile(binaryToHex(cipher),outputFile);
+        else
+            writeToFile(cipher,outputFile);
+
     }
     public static void writeToFile(String line, String fileName) {
         try {
