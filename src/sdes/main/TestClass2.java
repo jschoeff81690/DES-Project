@@ -1,7 +1,13 @@
 package sdes.main;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
@@ -20,25 +26,6 @@ public class TestClass2 {
     /**
      * @param args
      */
-    // public static void main(String[] args) {
-
-    //     //values from command line args
-    //     boolean verbose = true;
-    //     String paramsFile = "params.txt";
-
-    //     //commandLine args here?
-
-    //     SDES des = new SDES();
-
-    //     readParams(paramsFile, des, verbose);
-
-        // des.setKey("1100011110");
-        // des.setPlainText("10001010");
-        // //plaintText: 00101000
-        // //encrypts to: 10001010
-        // des.setIsEncryption(false);
-        // des.encrypt();
-    // }
 
     public static void main(String[] args) {
 
@@ -46,7 +33,7 @@ public class TestClass2 {
         System.out.println("Arguments: " + Arrays.toString(args));
         SDES des = new SDES();
 
-        
+
         //Defaults
         String paramsFile   = "params.txt";
         String inputFile    = "p.txt";
@@ -114,13 +101,15 @@ public class TestClass2 {
                 verbose = true;
             } else if ( command.equalsIgnoreCase(hexCommand)) {
                 hexInput =  true;
-            }else if ( command.equalsIgnoreCase(runCommand)) {
+            } else if ( command.equalsIgnoreCase(asciiCommand)) {
+                asciiInput =  true;
+            } else if ( command.equalsIgnoreCase(runCommand)) {
                 hexInput =  true;
             }
         }//eof while running
         //If the menu wasnt read, use the commandline args
-        if(!args[0].equalsIgnoreCase(menuCommand)) {
-            for(String arg : args) {
+        if (!args[0].equalsIgnoreCase(menuCommand)) {
+            for (String arg : args) {
                 String command = arg.substring(0, 2);
                 String userInput = arg.substring(2).trim(); //userInput will be saved and used constantly key
 
@@ -151,39 +140,44 @@ public class TestClass2 {
                     verbose = true;
                 } else if ( command.equalsIgnoreCase(hexCommand)) {
                     hexInput =  true;
-                }else if ( command.equalsIgnoreCase(runCommand)) {
+                } else if ( command.equalsIgnoreCase(asciiCommand)) {
+                    asciiInput =  true;
+                } else if ( command.equalsIgnoreCase(runCommand)) {
                     keepRunning =  false;
                 }
             }
         }
-        if(hexInput)
-            plainText  = hexToBinary(getLineFromFile(inputFile));
+
+        readParams(paramsFile, des, verbose);
+        if (hexInput)
+            plainText  = hexToBinary(getLineFromFile(inputFile), des.getBlockSize());
         else
             plainText  = getLineFromFile(inputFile);
 
         System.out.println(plainText);
-        if(key.equals(""))
-           key  = getLineFromFile(keyFile);
+        if (key.equals(""))
+            key  = getLineFromFile(keyFile);
 
-        readParams(paramsFile, des, verbose);
         des.setDisplayHex(hexInput);
-        des.setKey(key);
+        if (hexInput)
+             des.setKey(hexToBinary(key, des.getBlockSize()));
+        else
+            des.setKey(key);
+
         des.setPlainText(plainText);
         //plaintText: 00101000
         //encrypts to: 10001010
         des.setIsEncryption(encrypt);
         String cipher = des.encrypt();
 
-        if(hexInput)
-            writeToFile(binaryToHex(cipher),outputFile);
-        else
-            writeToFile(cipher,outputFile);
+        
+        writeToFile(cipher, outputFile);
 
     }
     public static void writeToFile(String line, String fileName) {
         try {
             File file = new File(fileName);
-             
+
             // if file doesnt exists, then create it
             if (!file.exists()) {
                 file.createNewFile();
@@ -193,15 +187,51 @@ public class TestClass2 {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(line);
             bw.close();
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + fileName);
+            System.out.println("Error: " + e.getLocalizedMessage());
+        }
+
+    }
+    public static String readBinaryFile(String fileName) {
+        File file = new File(fileName);
+        byte[] result = new byte[(int)file.length()];
+        InputStream input = null;
+        try {
+            int totalBytesRead = 0;
+            input = new BufferedInputStream(new FileInputStream(file));
+            while (totalBytesRead < result.length) {
+                int bytesRemaining = result.length - totalBytesRead;
+                //input.read() returns -1, 0, or more :
+                int bytesRead = input.read(result, totalBytesRead, bytesRemaining);
+                if (bytesRead > 0) {
+                    totalBytesRead = totalBytesRead + bytesRead;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error writing to file: " + fileName);
+            System.out.println("Error: " + e.getLocalizedMessage());
         }catch (IOException e) {
             System.out.println("Error writing to file: " + fileName);
             System.out.println("Error: " + e.getLocalizedMessage());
-
         }
-        
+        return new String(result);
     }
+
+    public static void writeBinaryFile(String content, String fileName) {
+        OutputStream output = null;
+        try {
+            output = new BufferedOutputStream(new FileOutputStream(fileName));
+            output.write(content.getBytes());
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + fileName);
+            System.out.println("Error: " + e.getLocalizedMessage());
+        }
+    }
+
+
     public static String getLineFromFile(String fileName) {
-        String line="";
+        String line = "";
         try {
             File file = new File(fileName);
             FileReader fr = new FileReader(file.getAbsolutePath());
@@ -209,13 +239,11 @@ public class TestClass2 {
 
             line = getLine(br);
             br.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Error finding file: " + fileName);
             System.out.println("Error: " + e.getLocalizedMessage());
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Error writing to file: " + fileName);
             System.out.println("Error: " + e.getLocalizedMessage());
 
@@ -224,8 +252,13 @@ public class TestClass2 {
     }
 
     //hex -> binary
-    public static String hexToBinary(String hex) {
-        return new BigInteger(hex, 16).toString(2);
+    public static String hexToBinary(String hex, int length) {
+        StringBuilder s = new StringBuilder(new BigInteger(hex, 16).toString(2));
+        if(s.length() <  length)
+            for(int i =0; i <= (length-s.length()); i++) {
+                s.insert(0,'0');
+            }
+        return s.toString();
     }
 
     //bin-> hex
